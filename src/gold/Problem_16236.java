@@ -3,11 +3,70 @@ package gold;
 import java.io.*;
 import java.util.*;
 
+class Prey implements Comparable<Prey> {
+    private int x;
+    private int y;
+    private int time;
+
+    Prey(int newX, int newY, int newTime) {
+        x = newX;
+        y = newY;
+        time = newTime;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    @Override
+    public int compareTo(Prey p) {
+        if(time < p.getTime()) {
+            return -1;
+        }
+
+        else if(time > p.getTime()) {
+            return 1;
+        }
+
+        else {
+            if(y < p.getY()) {
+                return -1;
+            }
+
+            else if(y > p.getY()) {
+                return 1;
+            }
+
+            else {
+                if(x < p.getX()) {
+                    return -1;
+                }
+
+                else if(x > p.getX()) {
+                    return 1;
+                }
+
+                else {
+                    return 0;
+                }
+            }
+        }
+    }
+}
+
 public class Problem_16236 {
-    static Queue<Integer> q = new LinkedList<>();
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        Queue<Integer> q = new LinkedList<>();
         int n = Integer.parseInt(br.readLine());
         int[][] space = new int[n][n];
         boolean help = false;
@@ -38,6 +97,8 @@ public class Problem_16236 {
             q.add(sharkY);
             q.add(0);
             visited[sharkY][sharkX] = true;
+            ArrayList<Prey> preys = new ArrayList<>();
+            boolean preyFind = false;
 
             while (!q.isEmpty()) {
                 int currentX = q.remove();
@@ -46,23 +107,15 @@ public class Problem_16236 {
 
                 if (currentY - 1 >= 0) {
                     if (!visited[currentY - 1][currentX]) {
-                        if (space[currentY - 1][currentX] == 0 || space[currentY - 1][currentX] <= size) { //그냥 이동
+                        if (isMovable(currentX, currentY - 1, size, space)) { //그냥 이동
                             q.add(currentX);
                             q.add(currentY - 1);
                             q.add(timeTemp + 1);
                             visited[currentY - 1][currentX] = true;
 
-                            if (space[currentY - 1][currentX] != 0 && space[currentY - 1][currentX] < size) {
-                                space[sharkY][sharkX] = 0;
-                                sharkX = currentX;
-                                sharkY = currentY - 1;
-                                sizeUpCount++;
-                                help = false;
-                                if(size == sizeUpCount) {
-                                    size++;
-                                    sizeUpCount = 0;
-                                }
-                                break;
+                            if (isEatable(currentX, currentY - 1, size, space)) { //먹음
+                                preyFind = true;
+                                preys.add(new Prey(currentX, currentY - 1, timeTemp + 1));
                             }
                         }
                     }
@@ -70,23 +123,15 @@ public class Problem_16236 {
 
                 if (currentX - 1 >= 0) {
                     if (!visited[currentY][currentX - 1]) {
-                        if (space[currentY][currentX - 1] == 0 || space[currentY][currentX - 1] <= size) { //그냥 이동
+                        if (isMovable(currentX - 1, currentY, size, space)) {
                             q.add(currentX - 1);
                             q.add(currentY);
                             q.add(timeTemp + 1);
                             visited[currentY][currentX - 1] = true;
 
-                            if (space[currentY][currentX - 1] != 0 && space[currentY][currentX - 1] < size) {
-                                space[sharkY][sharkX] = 0;
-                                sharkX = currentX - 1;
-                                sharkY = currentY;
-                                sizeUpCount++;
-                                help = false;
-                                if(size == sizeUpCount) {
-                                    size++;
-                                    sizeUpCount = 0;
-                                }
-                                break;
+                            if (isEatable(currentX - 1, currentY, size, space)) {
+                                preyFind = true;
+                                preys.add(new Prey(currentX - 1, currentY, timeTemp + 1));
                             }
                         }
                     }
@@ -94,23 +139,15 @@ public class Problem_16236 {
 
                 if (currentX + 1 < n) {
                     if (!visited[currentY][currentX + 1]) {
-                        if (space[currentY][currentX + 1] == 0 || space[currentY][currentX + 1] <= size) { //그냥 이동
+                        if (isMovable(currentX + 1, currentY, size, space)) {
                             q.add(currentX + 1);
                             q.add(currentY);
                             q.add(timeTemp + 1);
                             visited[currentY][currentX + 1] = true;
 
-                            if (space[currentY][currentX + 1] != 0 && space[currentY][currentX + 1] < size) {
-                                space[sharkY][sharkX] = 0;
-                                sharkX = currentX + 1;
-                                sharkY = currentY;
-                                sizeUpCount++;
-                                help = false;
-                                if(size == sizeUpCount) {
-                                    size++;
-                                    sizeUpCount = 0;
-                                }
-                                break;
+                            if (isEatable(currentX + 1, currentY, size, space)) {
+                                preyFind = true;
+                                preys.add(new Prey(currentX + 1, currentY, timeTemp + 1));
                             }
                         }
                     }
@@ -118,45 +155,39 @@ public class Problem_16236 {
 
                 if (currentY + 1 < n) {
                     if (!visited[currentY + 1][currentX]) {
-                        if (space[currentY + 1][currentX] == 0 || space[currentY + 1][currentX] <= size) { //그냥 이동
+                        if (isMovable(currentX, currentY + 1, size, space)) {
                             q.add(currentX);
                             q.add(currentY + 1);
                             q.add(timeTemp + 1);
                             visited[currentY + 1][currentX] = true;
 
-                            if (space[currentY + 1][currentX] != 0 && space[currentY + 1][currentX] < size) {
-                                space[sharkY][sharkX] = 0;
-                                sharkX = currentX;
-                                sharkY = currentY + 1;
-                                sizeUpCount++;
-                                help = false;
-                                if(size == sizeUpCount) {
-                                    size++;
-                                    sizeUpCount = 0;
-                                }
-                                break;
+                            if (isEatable(currentX, currentY + 1, size, space)) {
+                                preyFind = true;
+                                preys.add(new Prey(currentX, currentY + 1, timeTemp + 1));
                             }
                         }
                     }
                 }
             }
 
-            for(int i = 0; i < n; i++) {
-                for(int j = 0; j < n; j++) {
-                    System.out.print(space[i][j] + " ");
+            if(preyFind) {
+                Prey[] preysArr = preys.toArray(new Prey[0]);
+                Arrays.sort(preysArr);
+                space[sharkY][sharkX] = 0;
+                sharkX = preysArr[0].getX();
+                sharkY = preysArr[0].getY();
+                space[sharkY][sharkX] = 0;
+                sizeUpCount++;
+                if(size == sizeUpCount) {
+                    size++;
+                    sizeUpCount = 0;
                 }
-                System.out.println();
+                help = false;
+                time += preysArr[0].getTime();
             }
-            System.out.println();
-            System.out.println(time + " " + size);
-            System.out.println();
 
             while(!q.isEmpty())
                 q.remove();
-
-            if(!help) {
-                time += (timeTemp + 1);
-            }
         }
 
         bw.write(String.valueOf(time));
@@ -164,7 +195,11 @@ public class Problem_16236 {
         bw.close();
     }
 
-    public static void priorityCheck(int time, int x, int y, int[][] space) { //거리를 가인수로 받고 BFS하여 똑같은 거리에 있는 먹이를 찾음
+    public static boolean isMovable(int currentX, int currentY, int size, int[][] space) {
+        return space[currentY][currentX] == 0 || space[currentY][currentX] <= size;
+    }
 
+    public static boolean isEatable(int currentX, int currentY, int size, int[][] space) {
+        return space[currentY][currentX] != 0 && space[currentY][currentX] < size;
     }
 }
