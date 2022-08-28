@@ -5,12 +5,12 @@ import java.util.*;
 
 public class Problem_1167 {
     static int result = 0;
-    static int temp = 0;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int v = Integer.parseInt(br.readLine());
+        Queue<Integer> q = new LinkedList<>();
         boolean[] visited = new boolean[v];
         Vertex[] tree = new Vertex[v];
 
@@ -28,14 +28,29 @@ public class Problem_1167 {
 
             tree[idx] = vertex;
         }
+        int nodeNum = findNodeNum(q, 0, tree, visited);
+        visited = new boolean[v];
+        int nodeNum2 = findNodeNum(q, nodeNum, tree, visited);
+        visited = new boolean[v];
+        q.add(nodeNum);
+        q.add(0);
 
-        for(int i = 0; i < v; i++, temp = 0) {
-            if(!visited[i]) {
-                dfs(i, tree, visited);
+        while(!q.isEmpty()) {
+            int node = q.remove();
+            int distance = q.remove();
+            if(node == nodeNum2) {
+                result = distance;
+                break;
             }
+            ArrayList<Integer> edge = tree[node].getEdges();
 
-            if(result < temp)
-                result = temp;
+            for(int i = 0; i < edge.size(); i += 2) {
+                if(!visited[edge.get(i) - 1]) {
+                    q.add(edge.get(i) - 1);
+                    q.add(distance + edge.get(i + 1));
+                    visited[edge.get(i) - 1] = true;
+                }
+            }
         }
 
         bw.write(String.valueOf(result));
@@ -43,23 +58,32 @@ public class Problem_1167 {
         bw.close();
     }
 
-    public static void dfs(int idx, Vertex[] tree, boolean[] visited) {
+    public static int findNodeNum(Queue<Integer> q, int idx, Vertex[] tree, boolean[] visited) {
+        int result = 0;
+        int max = 0;
+        q.add(idx);
+        q.add(0);
         visited[idx] = true;
-        ArrayList<Integer> edge = tree[idx].getEdges();
 
-        int maxDis = 0;
-        for(int i = 0; i < edge.size(); i += 2) {
-            if(!visited[edge.get(i) - 1] && (edge.get(i + 1) > maxDis)) {
-                maxDis = edge.get(i + 1);
+        while(!q.isEmpty()) {
+            int node = q.remove();
+            int distance = q.remove();
+            if(max < distance) {
+                max = distance;
+                result = node;
+            }
+            ArrayList<Integer> edge = tree[node].getEdges();
+
+            for(int i = 0; i < edge.size(); i += 2) {
+                if(!visited[edge.get(i) - 1]) {
+                    q.add(edge.get(i) - 1);
+                    q.add(distance + edge.get(i + 1));
+                    visited[edge.get(i) - 1] = true;
+                }
             }
         }
-        temp += maxDis;
 
-        for(int i = 0; i < edge.size(); i += 2) {
-            if(!visited[edge.get(i) - 1]) {
-                dfs(edge.get(i) - 1, tree, visited);
-            }
-        }
+        return result;
     }
 }
 
