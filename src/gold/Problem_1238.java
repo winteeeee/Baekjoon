@@ -13,59 +13,112 @@ public class Problem_1238 {
         int x = Integer.parseInt(st.nextToken());
         int[] result = new int[n];
 
-        PriorityQueue<Edge> h = new PriorityQueue<>();
-        for(int i = 0; i < m; i++) {
+        Edge[] edges = new Edge[m];
+        Node[] nodes = new Node[n];
+        for (int i = 0; i < m; i++) {
             st = new StringTokenizer(br.readLine());
             int start = Integer.parseInt(st.nextToken());
             int end = Integer.parseInt(st.nextToken());
             int t = Integer.parseInt(st.nextToken());
             Edge e = new Edge(start, end, t);
-            h.add(e);
+            edges[i] = e;
         }
 
-        for(int k = 0; k < n; k++) {
+        for(int i = 0; i < n; i++) {
+            ArrayList<Edge> temp = new ArrayList<>();
+            for(int j = 0; j < m; j++) {
+                if(edges[j].getStart() - 1 == i) {
+                    temp.add(edges[j]);
+                }
+            }
+            Edge[] tempArr = temp.toArray(new Edge[0]);
+            nodes[i] = new Node(tempArr);
+        }
+
+        for (int k = 0; k < n; k++) {
             int[] vertex = new int[n];
             boolean[] visited = new boolean[n];
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
                 vertex[i] = Integer.MAX_VALUE;
             vertex[k] = 0;
 
-            for (int i = 0; i < m; i++) {
-                Edge e = h.remove();
-                int minIndex = e.getStart();
-                visited[e.getStart() - 1] = true;
+            int minIdx = k;
+            FOR1:
+            for (int i = 0; i < n; i++) {
+                Edge min = nodes[minIdx].getMin();
+                boolean nextFind = false;
+                for (int j = 0; j < nodes[minIdx].getEdgeLength(); j++) {
+                    if (visited[min.getEnd() - 1])
+                        min = nodes[minIdx].getMin();
 
-                for (int j = 0; j < m; j++) {
-                    if (!visited[e.getEnd() - 1] && (e.getStart() - 1) == minIndex) {
-                        if (vertex[minIndex] + e.getT() < vertex[e.getEnd() - 1]) {
-                            vertex[e.getEnd() - 1] = vertex[minIndex] + e.getT();
+                    else {
+                        nextFind = true;
+                        break;
+                    }
+                }
+
+                if(!nextFind)
+                    continue FOR1;
+                minIdx = min.getEnd() - 1;
+                visited[min.getStart() - 1] = true;
+
+                Edge[] edgeArr = nodes[min.getStart() - 1].getEdge();
+                for(int j = 0; j < edgeArr.length; j++) {
+                    if(!visited[edgeArr[j].getEnd() - 1]) {
+                        if (vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT() < vertex[edgeArr[j].getEnd() - 1]) {
+                            vertex[edgeArr[j].getEnd() - 1] = vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT();
                         }
                     }
                 }
             }
             result[k] = vertex[x - 1];
+
+            for(int i = 0; i < n; i++) {
+                nodes[i].setMinIdx(0);
+            }
         }
 
         int[] vertex = new int[n];
         boolean[] visited = new boolean[n];
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
             vertex[i] = Integer.MAX_VALUE;
         vertex[x - 1] = 0;
 
-        for (int i = 0; i < n; i++) {
-            Edge e = h.remove();
-            int minIndex = e.getStart();
+        for(int i = 0; i < n; i++) {
+            nodes[i].setMinIdx(0);
+        }
 
-            for (int j = 0; j < m; j++) {
-                if (!visited[e.getEnd() - 1] && (e.getStart() - 1) == minIndex) {
-                    if (vertex[minIndex] + e.getT() < vertex[e.getEnd() - 1]) {
-                        vertex[e.getEnd() - 1] = vertex[minIndex] + e.getT();
+        int minIdx = x - 1;
+        FOR2:
+        for (int i = 0; i < n; i++) {
+            Edge min = nodes[minIdx].getMin();
+            boolean nextFind = false;
+            for(int j = 0; j < nodes[minIdx].getEdgeLength(); j++) {
+                if(visited[min.getEnd() - 1])
+                    min = nodes[minIdx].getMin();
+
+                else {
+                    nextFind = true;
+                    break;
+                }
+            }
+
+            if(!nextFind)
+                continue FOR2;
+            minIdx = min.getEnd() - 1;
+            visited[min.getStart() - 1] = true;
+
+            Edge[] edgeArr = nodes[min.getStart() - 1].getEdge();
+            for(int j = 0; j < edgeArr.length; j++) {
+                if(!visited[edgeArr[j].getEnd() - 1]) {
+                    if (vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT() < vertex[edgeArr[j].getEnd() - 1]) {
+                        vertex[edgeArr[j].getEnd() - 1] = vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT();
                     }
                 }
             }
         }
 
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             result[i] += vertex[i];
         }
 
@@ -81,16 +134,9 @@ class Edge implements Comparable<Edge>{
     private int end;
     private int t;
 
-    public Edge(int s, int e, int t) {
-        start = s;
-        end = e;
-        this.t = t;
-    }
-
     public int getStart() {
         return start;
     }
-
     public int getEnd() {
         return end;
     }
@@ -99,9 +145,45 @@ class Edge implements Comparable<Edge>{
         return t;
     }
 
-    public int compareTo(Edge e) {
-        return Integer.compare(t, e.getT());
+    public Edge(int start, int end, int t) {
+        this.start = start;
+        this.end = end;
+        this.t = t;
+    }
+
+    public int compareTo(Edge other) {
+        return Integer.compare(t, other.t);
     }
 }
 
-//우선순위 큐를 이용한 다익스트라 알고리즘 구현중
+class Node {
+    private Edge[] e;
+    private int minIdx;
+
+    public Node(Edge[] e) {
+        this.e = e;
+        Arrays.sort(e);
+        minIdx = 0;
+    }
+
+    public Edge getMin() {
+        Edge r = e[minIdx];
+
+        if(minIdx + 1 < e.length)
+            minIdx++;
+
+        return r;
+    }
+
+    public int getEdgeLength() {
+        return e.length;
+    }
+
+    public void setMinIdx(int n) {
+        minIdx = n;
+    }
+
+    public Edge[] getEdge() {
+        return e;
+    }
+}
