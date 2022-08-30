@@ -25,10 +25,10 @@ public class Problem_1238 {
             edges[i] = e;
         }
 
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             ArrayList<Edge> temp = new ArrayList<>();
-            for(int j = 0; j < m; j++) {
-                if(edges[j].getStart() - 1 == i) {
+            for (int j = 0; j < m; j++) {
+                if (edges[j].getStart() - 1 == i) {
                     temp.add(edges[j]);
                 }
             }
@@ -49,8 +49,8 @@ public class Problem_1238 {
                 visited[min.getStart() - 1] = true;
 
                 Edge[] edgeArr = nodes[min.getStart() - 1].getEdge();
-                for(int j = 0; j < edgeArr.length; j++) {
-                    if(!visited[edgeArr[j].getEnd() - 1]) {
+                for (int j = 0; j < edgeArr.length; j++) {
+                    if (!visited[edgeArr[j].getEnd() - 1]) {
                         if (vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT() < vertex[edgeArr[j].getEnd() - 1]) {
                             vertex[edgeArr[j].getEnd() - 1] = vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT();
                         }
@@ -58,9 +58,9 @@ public class Problem_1238 {
                 }
 
                 int minV = Integer.MAX_VALUE;
-                for(int j = 0; j < vertex.length; j++) {
-                    if(!visited[j]) {
-                        if(vertex[j] < minV) {
+                for (int j = 0; j < vertex.length; j++) {
+                    if (!visited[j]) {
+                        if (vertex[j] < minV) {
                             minV = vertex[j];
                             minIdx = j;
                         }
@@ -69,11 +69,11 @@ public class Problem_1238 {
             }
             result[k] = vertex[x - 1];
 
-            for(int i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 nodes[i].setMinIdx(0);
             }
 
-            if(k == x - 1) {
+            if (k == x - 1) {
                 xVertex = vertex.clone();
             }
         }
