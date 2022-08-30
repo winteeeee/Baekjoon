@@ -10,7 +10,7 @@ public class Problem_1504 {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int n = Integer.parseInt(st.nextToken());
         int e = Integer.parseInt(st.nextToken());
-        int[] result = new int[2];
+        long[] result = new long[2];
 
         ArrayList<Integer[]> edges = new ArrayList<>();
         for(int i = 0; i < e; i++) {
@@ -24,7 +24,7 @@ public class Problem_1504 {
 
         ArrayList<Integer[]>[] vertex = new ArrayList[n];
         for(int i = 0; i < n; i++)
-            vertex[i] = new ArrayList<Integer[]>();
+            vertex[i] = new ArrayList<>();
 
         for(int i = 0; i < e; i++) {
             Integer[] temp = edges.get(i);
@@ -72,7 +72,11 @@ public class Problem_1504 {
         result[1] += graph[v1 - 1];
 
         Arrays.sort(result);
-        bw.write(String.valueOf(result[0]));
+        if(result[0] < Integer.MAX_VALUE)
+            bw.write(String.valueOf(result[0]));
+
+        else
+            bw.write("-1");
         bw.flush();
         bw.close();
     }
@@ -80,29 +84,28 @@ public class Problem_1504 {
     public static void dijkstra(int start, ArrayList<Integer[]>[] vertex, int[] graph, boolean[] visited) {
         PriorityQueue<Node_1504> h = new PriorityQueue<>();
         h.add(new Node_1504(start, 0));
-        int visitedCount = 0;
 
-        while(visitedCount < visited.length) {
+        while(!h.isEmpty()) {
             Node_1504 node = h.remove();
+            while(!h.isEmpty())
+                h.remove();
             int curIdx = node.getIdx();
             visited[curIdx] = true;
-            visitedCount++;
 
             for(int i = 0; i < vertex[curIdx].size(); i++) {
                 int nextIdx;
-                if(vertex[curIdx].get(i)[0] == curIdx)
+                if(vertex[curIdx].get(i)[0] - 1 == curIdx)
                     nextIdx = vertex[curIdx].get(i)[1] - 1;
 
                 else
                     nextIdx = vertex[curIdx].get(i)[0] - 1;
 
                 if(!visited[nextIdx]) {
+                    h.add(new Node_1504(nextIdx, graph[nextIdx]));
                     if(graph[curIdx] + vertex[curIdx].get(i)[2] < graph[nextIdx]) {
                         graph[nextIdx] = graph[curIdx] + vertex[curIdx].get(i)[2];
                     }
                 }
-
-                h.add(new Node_1504(nextIdx, graph[nextIdx]));
             }
         }
     }
