@@ -135,10 +135,6 @@ class Node {
         return r;
     }
 
-    public int getEdgeLength() {
-        return e.length;
-    }
-
     public void setMinIdx(int n) {
         minIdx = n;
     }
