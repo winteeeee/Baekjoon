@@ -12,6 +12,7 @@ public class Problem_1238 {
         int m = Integer.parseInt(st.nextToken());
         int x = Integer.parseInt(st.nextToken());
         int[] result = new int[n];
+        int[] xVertex = new int[n];
 
         Edge[] edges = new Edge[m];
         Node[] nodes = new Node[n];
@@ -43,23 +44,8 @@ public class Problem_1238 {
             vertex[k] = 0;
 
             int minIdx = k;
-            FOR1:
             for (int i = 0; i < n; i++) {
                 Edge min = nodes[minIdx].getMin();
-                boolean nextFind = false;
-                for (int j = 0; j < nodes[minIdx].getEdgeLength(); j++) {
-                    if (visited[min.getEnd() - 1])
-                        min = nodes[minIdx].getMin();
-
-                    else {
-                        nextFind = true;
-                        break;
-                    }
-                }
-
-                if(!nextFind)
-                    continue FOR1;
-                minIdx = min.getEnd() - 1;
                 visited[min.getStart() - 1] = true;
 
                 Edge[] edgeArr = nodes[min.getStart() - 1].getEdge();
@@ -70,56 +56,30 @@ public class Problem_1238 {
                         }
                     }
                 }
+
+                int minV = Integer.MAX_VALUE;
+                for(int j = 0; j < vertex.length; j++) {
+                    if(!visited[j]) {
+                        if(vertex[j] < minV) {
+                            minV = vertex[j];
+                            minIdx = j;
+                        }
+                    }
+                }
             }
             result[k] = vertex[x - 1];
 
             for(int i = 0; i < n; i++) {
                 nodes[i].setMinIdx(0);
             }
-        }
 
-        int[] vertex = new int[n];
-        boolean[] visited = new boolean[n];
-        for (int i = 0; i < n; i++)
-            vertex[i] = Integer.MAX_VALUE;
-        vertex[x - 1] = 0;
-
-        for(int i = 0; i < n; i++) {
-            nodes[i].setMinIdx(0);
-        }
-
-        int minIdx = x - 1;
-        FOR2:
-        for (int i = 0; i < n; i++) {
-            Edge min = nodes[minIdx].getMin();
-            boolean nextFind = false;
-            for(int j = 0; j < nodes[minIdx].getEdgeLength(); j++) {
-                if(visited[min.getEnd() - 1])
-                    min = nodes[minIdx].getMin();
-
-                else {
-                    nextFind = true;
-                    break;
-                }
-            }
-
-            if(!nextFind)
-                continue FOR2;
-            minIdx = min.getEnd() - 1;
-            visited[min.getStart() - 1] = true;
-
-            Edge[] edgeArr = nodes[min.getStart() - 1].getEdge();
-            for(int j = 0; j < edgeArr.length; j++) {
-                if(!visited[edgeArr[j].getEnd() - 1]) {
-                    if (vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT() < vertex[edgeArr[j].getEnd() - 1]) {
-                        vertex[edgeArr[j].getEnd() - 1] = vertex[edgeArr[j].getStart() - 1] + edgeArr[j].getT();
-                    }
-                }
+            if(k == x - 1) {
+                xVertex = vertex.clone();
             }
         }
 
         for (int i = 0; i < n; i++) {
-            result[i] += vertex[i];
+            result[i] += xVertex[i];
         }
 
         Arrays.sort(result);
