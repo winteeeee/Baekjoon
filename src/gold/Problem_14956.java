@@ -23,7 +23,7 @@ public class Problem_14956 {
     //스테이터스 : 위1, 오른2, 왼3, 아래4
 
     public static void makeHilbertCurve(int x, int y, int status, int m, int n) {
-        if(n == 2) {
+        if(n == 1) {
             if(status == 1) {
                 if(count == m) {
                     resultY = y;
