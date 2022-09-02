@@ -1,81 +1,61 @@
 package gold;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Problem_2263 {
-    static StringBuilder sb = new StringBuilder();
+    static int idx = 0;
+    static int[] inorder;
+    static int[] postorder;
+    static int[] preorder;
     public static void main(String[] args) throws IOException {
         var br = new BufferedReader(new InputStreamReader(System.in));
         var bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int n = Integer.parseInt(br.readLine());
-        int[] inorder = new int[n];
-        int[] postorder = new int[n];
+        inorder = new int[n];
+        postorder = new int[n];
+        preorder = new int[n];
 
         for(int i = 0; i < 2; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            if(i == 0)
-                for(int j = 0; j < n; j++)
-                    inorder[i] = Integer.parseInt(st.nextToken());
+            if(i == 0) {
+                for (int j = 0; j < n; j++)
+                    inorder[j] = Integer.parseInt(st.nextToken());
+            }
 
-            else
-                for(int j = 0; j < n; j++)
-                    postorder[i] = Integer.parseInt(st.nextToken());
+            else {
+                for (int j = 0; j < n; j++)
+                    postorder[j] = Integer.parseInt(st.nextToken());
+            }
         }
 
-        Node_2263 root = new Node_2263(postorder[n - 1]);
-        makeTree(root, inorder, postorder);
-        preorder(root);
-        bw.write(sb.toString());
+        boolean[] visited = new boolean[n + 1];
+        makePreorder(0, inorder.length, postorder.length - 1, visited);
+        for(int i = 0; i < n; i++)
+            bw.write(preorder[i] + " ");
         bw.flush();
         bw.close();
     }
 
-    public static void preorder(Node_2263 root) {
-        if(root.equals(null))
+    public static void makePreorder(int inStart, int inEnd, int postEnd, boolean[] visited) {
+        if(postEnd < 0 || postEnd >= postorder.length)
             return;
 
-        sb.append(root.getN() + " ");
-        preorder(root.getLeft());
-        preorder(root.getRight();
-    }
+        if(visited[postorder[postEnd]])
+            return;
 
-    public static void makeTree(Node_2263 root, int[] inorder, int[] postorder) {
-        int n = root.getN();
-        int inIdx = Arrays.binarySearch(inorder, n);
-        int postIdx = Arrays.binarySearch(postorder, n);
-    }
-}
+        preorder[idx++] = postorder[postEnd];
+        visited[postorder[postEnd]] = true;
 
-class Node_2263 {
-    private int n;
-    private Node_2263 left;
-    private Node_2263 right;
+        int root = 0;
+        for(int i = inStart; i < inEnd; i++) {
+            if(inorder[i] == postorder[postEnd]) {
+                root = i;
+                break;
+            }
+        }
 
-    public Node_2263(int n) {
-        this.n = n;
-        left = null;
-        right = null;
-    }
-
-    public void setLeft(Node_2263 l) {
-        left = l;
-    }
-
-    public void setRight(Node_2263 r) {
-        right = r;
-    }
-
-    public int getN() {
-        return n;
-    }
-
-    public Node_2263 getLeft() {
-        return left;
-    }
-
-    public Node_2263 getRight() {
-        return right;
+        makePreorder(inStart, root, postEnd - (inEnd - root), visited);
+        makePreorder(root + 1, inEnd, postEnd - 1, visited);
     }
 }
