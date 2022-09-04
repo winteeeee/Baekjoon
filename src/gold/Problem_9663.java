@@ -12,8 +12,8 @@ public class Problem_9663 {
 
         for(int i = 0; i < n; i++) {
             boolean[][] queen = new boolean[n][n];
-            queen[i][0] = true;
-            DFS(i, n, queen, 1);
+            queen[0][i] = true;
+            DFS(0, n, queen, 1);
         }
 
         bw.write(String.valueOf(result));
@@ -28,17 +28,14 @@ public class Problem_9663 {
         }
 
         for(int k = 1; y + k < n; k++) {
-            for (int i = 0; i < n; i++) {
-                if (y < n - 1) {
-                    if (isPossible(queen, i, y + k, n)) {
-                        queen[y + k][i] = true;
-                        DFS(y + k, n, queen, count + 1);
-                        break;
-                    }
+            if(breakable(queen, y + k - 1, n))
+                break;
 
-                    else {
-                        queen[y + k][i] = false;
-                    }
+            for (int i = 0; i < n; i++) {
+                if (isPossible(queen, i, y + k, n)) {
+                    queen[y + k][i] = true;
+                    DFS(y + k, n, queen, count + 1);
+                    queen[y + k][i] = false;
                 }
             }
         }
@@ -46,7 +43,7 @@ public class Problem_9663 {
 
     public static boolean isPossible(boolean[][] queen, int x, int y, int n) {
         for(int i = 1; i <= y; i++) {
-            if(y - i>= 0)
+            if(y - i >= 0)
                 if(queen[y - i][x])
                     return false;
 
@@ -56,7 +53,18 @@ public class Problem_9663 {
 
             if(y - i >= 0 && x + i < n)
                 if(queen[y - i][x + i])
-                  return false;
+                    return false;
+        }
+
+        return true;
+    }
+
+    public static boolean breakable(boolean[][] queen, int y, int n) {
+        if(y < n) {
+            for (int i = 0; i < n; i++) {
+                if (queen[y][i])
+                    return false;
+            }
         }
 
         return true;
