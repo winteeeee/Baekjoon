@@ -10,7 +10,7 @@ public class Problem_13172 {
         var bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int m = Integer.parseInt(br.readLine());
         long[][] dice = new long[m + 1][2];
-        int result = 0;
+        long result = 0;
 
         for(int i = 1; i <= m; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -19,23 +19,26 @@ public class Problem_13172 {
         }
 
         for(int i = 1; i <= m; i++) {
-            if(dice[i][1] % dice[i][0] == 0) {
-                result += dice[i][1] / dice[i][0];
-            }
-
-            else {
-
-            }
+            long MODInverse = findMODInverse(dice[i][0], MOD - 2);
+            result += ((dice[i][1] % MOD * MODInverse % MOD) % MOD);
         }
+
+        bw.write(String.valueOf(result % MOD));
+        bw.flush();
+        bw.close();
     }
 
-    public static long findModInverse(int a, int b) {
-        /*
-        (a * result) % MOD == 1을 만족시키는 result를 찾아야 함
+    public static long findMODInverse(long target, long n) {
+        if(n == 1)
+            return target;
 
-         */
+        long result;
+        long temp = findMODInverse(target, n / 2);
+        if(n % 2 == 0)
+            result = temp % MOD * temp % MOD % MOD;
+        else
+            result = temp % MOD * temp % MOD * target % MOD % MOD;
 
-        int[][] EEA = new int[3][4];
-
+        return result;
     }
 }
