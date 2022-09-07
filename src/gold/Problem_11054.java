@@ -1,6 +1,7 @@
 package gold;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Problem_11054 {
@@ -10,7 +11,6 @@ public class Problem_11054 {
         int n = Integer.parseInt(br.readLine());
         int[] sequence = new int[n + 1];
         int[] dp = new int[n + 1];
-        int[] dp2 = new int[n + 1];
 
         StringTokenizer st = new StringTokenizer(br.readLine());
         for(int i = 1; i <= n; i++)
@@ -24,20 +24,27 @@ public class Problem_11054 {
             }
         }
 
+        int result = 0;
         for(int i = 1; i <= n; i++) {
-            for (int j = i; j <= n; j++) {
-                if(sequence[i] < sequence[j])
-                    dp2[i] = Math.max(dp2[j] + 1, dp2[i]);
+            int[] dp2 = new int[n + 1];
+            int max = 0;
+            for(int j = i + 1; j <= n; j++) {
+                for(int k = 0; k < j; k++) {
+                    if (sequence[j] < sequence[k]) {
+                        dp2[j] = Math.max(dp2[k] + 1, dp2[j]);
+
+                        if (dp2[j] > max)
+                            max = dp2[j];
+                    }
+                }
+            }
+
+            if (dp[i] + max > result) {
+                result = dp[i] + max;
             }
         }
 
-        int count = 0;
-        for(int i = 1; i <= n; i++) {
-            if(count < dp[i] + dp2[i])
-                count = dp[i] + dp2[i];
-        }
-
-        bw.write(String.valueOf(count));
+        bw.write(String.valueOf(result));
         bw.flush();
         bw.close();
     }
