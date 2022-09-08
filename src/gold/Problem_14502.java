@@ -22,7 +22,7 @@ public class Problem_14502 {
 
         for(int i = 0; i < n; i++) {
             st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < n; j++) {
+            for(int j = 0; j < m; j++) {
                 lab[i][j] = Integer.parseInt(st.nextToken());
             }
         }
@@ -54,7 +54,7 @@ public class Problem_14502 {
             for(int i = 0; i < n; i++) {
                 for(int j = 0; j < m; j++) {
                     if(cloneLab[i][j] == 0 && !visited2[i][j]) {
-                        countingSafeZone(i, j, cloneLab, visited);
+                        countingSafeZone(i, j, cloneLab, visited2);
                     }
                 }
             }
@@ -63,6 +63,8 @@ public class Problem_14502 {
                 max = count;
 
             count = 0;
+
+            return;
         }
 
         for(int i = 0; i < n; i++) {
@@ -80,6 +82,7 @@ public class Problem_14502 {
         Queue<Integer> q = new LinkedList<>();
         q.add(row);
         q.add(column);
+        visited[row][column] = true;
 
         while(!q.isEmpty()) {
             int r = q.remove();
@@ -102,10 +105,12 @@ public class Problem_14502 {
         Queue<Integer> q = new LinkedList<>();
         q.add(row);
         q.add(column);
+        visited[row][column] = true;
 
         while(!q.isEmpty()) {
             int r = q.remove();
             int c = q.remove();
+            count++;
 
             for(int i = 0; i < 4; i++) {
                 if((r + cordY[i] >= 0 && r + cordY[i] < n) && (c + cordX[i] >= 0 && c + cordX[i] < m)) {
@@ -113,7 +118,6 @@ public class Problem_14502 {
                         q.add(r + cordY[i]);
                         q.add(c + cordX[i]);
                         visited[r + cordY[i]][c + cordX[i]] = true;
-                        count++;
                     }
                 }
             }
