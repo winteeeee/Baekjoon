@@ -13,17 +13,17 @@ public class Problem_14938 {
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
         int r = Integer.parseInt(st.nextToken());
-        int[] item = new int[n];
+        int[] item = new int[n + 1];
 
         st = new StringTokenizer(br.readLine());
-        for(int i = 0; i < n; i++)
+        for(int i = 1; i <= n; i++)
             item[i] = Integer.parseInt(st.nextToken());
 
-        ArrayList<Integer[]>[] edges = new ArrayList[r];
-        for(int i = 0; i < r; i++)
+        ArrayList<Integer[]>[] edges = new ArrayList[n + 1];
+        for(int i = 1; i <= n; i++)
             edges[i] = new ArrayList<>();
 
-        for(int i = 0; i < m; i++) {
+        for(int i = 0; i < r; i++) {
             st = new StringTokenizer(br.readLine());
             int idx = Integer.parseInt(st.nextToken());
             int idx2 = Integer.parseInt(st.nextToken());
@@ -32,27 +32,35 @@ public class Problem_14938 {
             Integer[] temp2 = new Integer[2];
             temp[0] = idx2; temp[1] = distance;
             temp2[0] = idx; temp2[1] = distance;
-            edges[idx - 1].add(temp);
-            edges[idx2 - 1].add(temp2);
+            edges[idx].add(temp);
+            edges[idx2].add(temp2);
         }
 
         int result = Integer.MIN_VALUE;
-        for(int i = 0; i < n; i++) {
+        for(int i = 1; i <= n; i++) {
             PriorityQueue<Node_14938> h = new PriorityQueue<>();
-            boolean[] visited = new boolean[n];
-            visited[i] = true;
-            int numberOfItem = item[i];
+            boolean[] visited = new boolean[n + 1];
+            int numberOfItem = 0;
             h.add(new Node_14938(i, 0));
 
             while(!h.isEmpty()) {
                 Node_14938 node = h.remove();
-                int size = edges[node.getN() - 1].size();
+                int curIdx = node.getN();
+                int curDistance = node.getDistance();
+                int size = edges[curIdx].size();
+                if(visited[curIdx])
+                    continue;
+
+                else {
+                    numberOfItem += item[curIdx];
+                    visited[curIdx] = true;
+                }
 
                 for(int j = 0; j < size; j++) {
-                    if(node.getDistance() + edges[j].get(j)[1] <= m && !visited[edges[j].get(j)[1]]) {
-                        numberOfItem += item[edges[j].get(j)[0] - 1];
-                        h.add(new Node_14938(edges[j].get(j)[0], node.getDistance() + edges[j].get(j)[1]));
-                        visited[edges[j].get(j)[1]] = true;
+                    int nextIdx = edges[curIdx].get(j)[0];
+                    int nextDistance = edges[curIdx].get(j)[1];
+                    if(curDistance + nextDistance <= m && !visited[nextIdx]) {
+                        h.add(new Node_14938(nextIdx, curDistance + nextDistance));
                     }
                 }
             }
@@ -88,3 +96,4 @@ class Node_14938 implements Comparable<Node_14938> {
         return Integer.compare(distance, o.distance);
     }
 }
+
