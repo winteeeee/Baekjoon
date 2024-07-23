@@ -4,10 +4,12 @@ import java.io.*;
 import java.util.*;
 
 /*
-
+매우 교육적인 트리 문제
+문제 밑에 힌트로 구체적으로 어떻게 구현해야할지를 전부 가르쳐준다.
+문제 자체는 매우 간단한 트리 기초 구현을 할 수 있으면 풀 수 있다.
  */
 
-public class Main {
+public class Problem_15681 {
     static class Node {
         int number;
         Node parent;
