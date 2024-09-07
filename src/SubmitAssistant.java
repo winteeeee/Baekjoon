@@ -1,19 +1,22 @@
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
 
 public class SubmitAssistant {
     public static void main(String[] args) throws Exception {
         var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         var originalCode = clipboard.getContents(null);
-        var st = new StringTokenizer((String)originalCode.getTransferData(DataFlavor.stringFlavor), "\n");
+        var br = new BufferedReader(new StringReader((String)originalCode.getTransferData(DataFlavor.stringFlavor)));
 
         var sb = new StringBuilder();
         boolean isComment = false;
 
-        while (st.hasMoreTokens()) {
-            String line = st.nextToken();
+        while (true) {
+            String line = br.readLine();
             if (line == null) break;
 
             if (line.startsWith("public class")) {

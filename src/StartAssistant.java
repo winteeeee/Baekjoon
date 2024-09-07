@@ -19,7 +19,7 @@ public class StartAssistant {
 
         sb.append("package ").append(difficulty).append(";\n\n");
         sb.append("import java.io.*;").append("\n\n");
-        sb.append("public class Problem_").append(problemNumber).append("{\n");
+        sb.append("public class Problem_").append(problemNumber).append(" {\n");
         sb.append("    public static void main(String[] args) throws IOException {\n");
         sb.append("        var br = new BufferedReader(new InputStreamReader(System.in));\n");
         sb.append("        var bw = new BufferedWriter(new OutputStreamWriter(System.out));\n\n");
