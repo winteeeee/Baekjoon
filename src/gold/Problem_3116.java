@@ -7,12 +7,10 @@ public class Problem_3116 {
     static class IntersectionPoint {
         int x;
         int y;
-        int time;
 
-        IntersectionPoint(int x, int y, int time) {
+        IntersectionPoint(int x, int y) {
             this.x = x;
             this.y = y;
-            this.time = time;
         }
 
         @Override
@@ -20,12 +18,12 @@ public class Problem_3116 {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             IntersectionPoint that = (IntersectionPoint) o;
-            return x == that.x && y == that.y && time == that.time;
+            return x == that.x && y == that.y;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(x, y, time);
+            return Objects.hash(x, y);
         }
     }
 
@@ -131,7 +129,7 @@ public class Problem_3116 {
             int thisTime = getTimeWhenCoordinate(interX, interY);
             int bTime = b.getTimeWhenCoordinate(interX, interY);
 
-            if (thisTime != -1 && thisTime == bTime) return new IntersectionPoint(interX, interY, thisTime);
+            if (thisTime != -1 && thisTime == bTime) return new IntersectionPoint(interX, interY);
             return null;
         }
 
@@ -187,6 +185,7 @@ public class Problem_3116 {
                 if (intersectionPoint != null) {
                     if (intersectionPoints.containsKey(intersectionPoint)) {
                         var set = intersectionPoints.get(intersectionPoint);
+                        set.add((short) i);
                         set.add((short) j);
                         intersectionPoints.put(intersectionPoint, set);
                     } else {
@@ -202,11 +201,23 @@ public class Problem_3116 {
         short maxCount = 0;
         int maxTime = Integer.MAX_VALUE;
         for (Map.Entry<IntersectionPoint, HashSet<Short>> e : intersectionPoints.entrySet()) {
-            if (e.getValue().size() > maxCount) {
-                maxCount = (short) e.getValue().size();
-                maxTime = e.getKey().time;
-            } else if (e.getValue().size() == maxCount) {
-                maxTime = Math.min(maxTime, e.getKey().time);
+            TreeMap<Integer, Integer> tempMap = new TreeMap<>();
+            for (Short idx : e.getValue()) {
+                int time = bacterias[idx].getTimeWhenCoordinate(e.getKey().x, e.getKey().y);
+                if (tempMap.containsKey(time)) {
+                    tempMap.put(time, tempMap.get(time) + 1);
+                } else {
+                    tempMap.put(time, 1);
+                }
+            }
+
+            for (Map.Entry<Integer, Integer> e2 : tempMap.entrySet()) {
+                if (e2.getValue() > maxCount) {
+                    maxCount = e2.getValue().shortValue();
+                    maxTime = e2.getKey();
+                } else if (e2.getValue() == maxCount) {
+                    maxTime = Math.min(maxTime, e2.getKey());
+                }
             }
         }
 
