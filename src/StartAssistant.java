@@ -18,13 +18,12 @@ public class StartAssistant {
         var sb = new StringBuilder();
 
         sb.append("package ").append(difficulty).append(";\n\n");
-        sb.append("import java.io.*;").append("\n\n");
+        sb.append("import java.io.*;").append("\n");
+        sb.append("import java.util.*;").append("\n\n");
         sb.append("public class Problem_").append(problemNumber).append(" {\n");
-        sb.append("    public static void main(String[] args) throws IOException {\n");
-        sb.append("        var br = new BufferedReader(new InputStreamReader(System.in));\n");
-        sb.append("        var bw = new BufferedWriter(new OutputStreamWriter(System.out));\n\n");
-        sb.append("        bw.flush();\n");
-        sb.append("        bw.close();\n");
+        sb.append("    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));\n");
+        sb.append("    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));\n\n");
+        sb.append("    public static void main(String[] args) throws Exception {\n\n");
         sb.append("    }\n");
         sb.append("}\n");
 
